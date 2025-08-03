@@ -13,12 +13,26 @@ const NewsFeed = () => {
     }
     setError(null);
 
+    const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
+
+    if (!apiKey || apiKey === 'YOUR_API_KEY_HERE') {
+      setError('GNews API key is missing. Please add it to your .env file.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Call our own backend API endpoint
-      const response = await axios.get('/api/news');
+      const response = await axios.get('/api/gnews/search', {
+        params: {
+          q: 'cryptocurrencies',
+          lang: 'en',
+          max: 10,
+          apikey: apiKey, // Pass the key as a param
+        },
+      });
       setArticles(response.data.articles);
     } catch (err) {
-      setError('Failed to fetch news. The backend API might be down.');
+      setError('Failed to fetch news.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -27,9 +41,7 @@ const NewsFeed = () => {
 
   useEffect(() => {
     fetchNews();
-
     const intervalId = setInterval(fetchNews, 6 * 60 * 60 * 1000);
-
     return () => clearInterval(intervalId);
   }, []);
 

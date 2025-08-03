@@ -18,7 +18,6 @@ const CoinList = () => {
             order: 'market_cap_desc'
           }
         });
-        // Filter to top 25 categories to ensure relevance and avoid empty ones
         setCategories(response.data.slice(0, 25));
       } catch (error) {
         console.error('Error fetching categories:', error);
@@ -45,11 +44,11 @@ const CoinList = () => {
           params.category = selectedCategory;
         }
 
-        const response = await axios.get('https://api.coingecko.com/api/v3/coins/markets', { params });
+        const response = await axios.get('/api/coingecko/coins/markets', { params });
         setCoins(response.data);
       } catch (error) {
         console.error('Error fetching coin data:', error);
-        setCoins([]); // Clear coins on error
+        setCoins([]);
       } finally {
         setLoading(false);
       }
@@ -100,7 +99,7 @@ const CoinList = () => {
 
     if (price < 0.01 && price > 0) {
       options.minimumFractionDigits = 2;
-      options.maximumFractionDigits = 8; // Show more decimals for low-value coins
+      options.maximumFractionDigits = 8;
     } else {
       options.minimumFractionDigits = 2;
       options.maximumFractionDigits = 2;
@@ -115,7 +114,6 @@ const CoinList = () => {
 
   return (
     <div className="space-y-8">
-      {/* Search and Filter Section */}
       <div className="p-4 rounded-2xl shadow-neumorphic-light-convex dark:shadow-neumorphic-dark-convex">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="relative flex-grow">
@@ -150,7 +148,6 @@ const CoinList = () => {
         </div>
       </div>
 
-      {/* Table Section */}
       <div className="p-2 md:p-4 rounded-2xl shadow-neumorphic-light-convex dark:shadow-neumorphic-dark-convex">
         <div className="overflow-x-auto">
           <table className="min-w-full border-collapse">
