@@ -22,7 +22,7 @@ const NewsFeed = () => {
           params: {
             q: 'cryptocurrencies',
             lang: 'en',
-            max: 6, // Fetch 6 articles
+            max: 10, // Fetch 10 articles for a denser marquee
             apikey: apiKey,
           },
         });
@@ -38,6 +38,22 @@ const NewsFeed = () => {
     fetchNews();
   }, []);
 
+  const newsContent = articles.map((article, index) => (
+    <a 
+      href={article.url} 
+      key={index} 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      className="flex flex-col w-80 flex-shrink-0 p-4 rounded-2xl shadow-neumorphic-light-convex dark:shadow-neumorphic-dark-convex hover:shadow-neumorphic-light-concave dark:hover:shadow-neumorphic-dark-concave transition-shadow duration-200"
+    >
+      <img src={article.image} alt={article.title} className="w-full h-40 object-cover rounded-xl mb-4" />
+      <div className="flex flex-col flex-grow">
+        <h3 className="font-bold text-lg mb-2 flex-grow">{article.title}</h3>
+        <p className="text-sm opacity-80 mt-auto">{article.source.name}</p>
+      </div>
+    </a>
+  ));
+
   return (
     <div className="mb-8">
       <h2 className="text-2xl font-bold mb-6 text-center">Trending News</h2>
@@ -47,14 +63,16 @@ const NewsFeed = () => {
       {error && <p className="text-center text-red-500">{error}</p>}
 
       {!loading && !error && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {articles.map((article, index) => (
-            <a href={article.url} key={index} target="_blank" rel="noopener noreferrer" className="block p-4 rounded-2xl shadow-neumorphic-light-convex dark:shadow-neumorphic-dark-convex hover:shadow-neumorphic-light-concave dark:hover:shadow-neumorphic-dark-concave transition-shadow duration-200">
-              <img src={article.image} alt={article.title} className="w-full h-40 object-cover rounded-xl mb-4" />
-              <h3 className="font-bold text-lg mb-2">{article.title}</h3>
-              <p className="text-sm opacity-80">{article.source.name}</p>
-            </a>
-          ))}
+        <div className="marquee-container">
+          <div className="marquee">
+            <div className="marquee-content">
+              {newsContent}
+            </div>
+            {/* Duplicate content for seamless animation */}
+            <div className="marquee-content" aria-hidden="true">
+              {newsContent}
+            </div>
+          </div>
         </div>
       )}
     </div>

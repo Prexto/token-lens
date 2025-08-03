@@ -1,3 +1,71 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Marquee Animation for News Feed */
+@layer components {
+  .marquee-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* Gradient Fades */
+  .marquee-container::before, .marquee-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 5rem; /* Adjust width of the fade */
+    z-index: 2;
+  }
+
+  .marquee-container::before {
+    left: 0;
+    background: linear-gradient(to right, var(--bg-color) 0%, transparent 100%);
+  }
+
+  .marquee-container::after {
+    right: 0;
+    background: linear-gradient(to left, var(--bg-color) 0%, transparent 100%);
+  }
+
+  .marquee {
+    display: flex;
+    overflow: hidden;
+    user-select: none;
+    gap: 1.5rem; /* Corresponds to gap-6 in Tailwind */
+  }
+
+  /* Pause animation on container hover */
+  .marquee-container:hover .marquee-content {
+    animation-play-state: paused;
+  }
+
+  .marquee-content {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-around;
+    min-width: 100%;
+    gap: 1.5rem; /* Corresponds to gap-6 in Tailwind */
+    animation: scroll 40s linear infinite;
+  }
+
+  @keyframes scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-100% - 1.5rem)); /* 100% of content + gap */
+    }
+  }
+}
+
+/* Define background color variables for gradients */
+:root {
+  --bg-color: #e0e5ec; /* light-bg */
+}
+
+.dark {
+  --bg-color: #242830; /* dark-bg */
+}
