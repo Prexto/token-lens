@@ -1,10 +1,6 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import axios from 'axios';
+const axios = require('axios');
 
-export default async function handler(
-  request: VercelRequest,
-  response: VercelResponse,
-) {
+module.exports = async (request, response) => {
   const apiKey = process.env.GNEWS_API_KEY;
 
   if (!apiKey) {
@@ -21,7 +17,6 @@ export default async function handler(
       },
     });
 
-    // Set cache headers to allow caching for 1 hour
     response.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
     return response.status(200).json(apiResponse.data);
 
@@ -29,4 +24,4 @@ export default async function handler(
     console.error(error);
     return response.status(500).json({ error: 'Failed to fetch news from GNews API.' });
   }
-}
+};
