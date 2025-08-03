@@ -1,4 +1,3 @@
-import './App.css';
 import CoinList from './components/CoinList';
 
 function App() {
@@ -13,3 +12,4 @@ function App() {
 }
 
 export default App;
+

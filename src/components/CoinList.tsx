@@ -30,41 +30,19 @@ const CoinList = () => {
   }, []);
 
   if (loading) {
-    return <p className="text-center">Loading...</p>;
+    return <p className="text-center text-gray-400">Loading...</p>;
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-gray-800 border border-gray-700">
-        <thead>
-          <tr className="border-b border-gray-700">
-            <th className="p-4 text-left">#</th>
-            <th className="p-4 text-left">Moneda</th>
-            <th className="p-4 text-left">Precio</th>
-            <th className="p-4 text-left">24h %</th>
-            <th className="p-4 text-left">Capitalización de Mercado</th>
-          </tr>
-        </thead>
-        <tbody>
-          {coins.map((coin, index) => (
-            <tr key={coin.id} className="border-b border-gray-700 hover:bg-gray-700">
-              <td className="p-4">{index + 1}</td>
-              <td className="p-4 flex items-center">
-                <img src={coin.image} alt={coin.name} className="w-6 h-6 mr-4" />
-                <div>
-                  <p className="font-bold">{coin.name}</p>
-                  <p className="text-gray-400 text-sm">{coin.symbol.toUpperCase()}</p>
-                </div>
-              </td>
-              <td className="p-4">${coin.current_price.toLocaleString()}</td>
-              <td className={`p-4 ${coin.price_change_percentage_24h > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {coin.price_change_percentage_24h.toFixed(2)}%
-              </td>
-              <td className="p-4">${coin.market_cap.toLocaleString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div>
+      <h2 className="text-2xl mb-4">Cryptocurrency Prices</h2>
+      <ul>
+        {coins.map((coin) => (
+          <li key={coin.id} className="mb-2 p-2 bg-gray-800 rounded">
+            {coin.name} ({coin.symbol.toUpperCase()}): ${coin.current_price}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
