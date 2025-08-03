@@ -24,15 +24,15 @@ function App() {
   };
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-800 dark:text-gray-200 transition-colors duration-300">
-      <div className="container mx-auto p-4">
-        <header className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
+    <div className="bg-light-bg dark:bg-dark-bg min-h-screen text-light-text dark:text-dark-text transition-colors duration-300 font-sans">
+      <div className="container mx-auto p-4 md:p-8">
+        <header className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">
             Crypto Tracker
           </h1>
           <button
             onClick={handleThemeSwitch}
-            className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
+            className="w-12 h-12 rounded-full shadow-neumorphic-light-convex dark:shadow-neumorphic-dark-convex active:shadow-neumorphic-light-concave dark:active:shadow-neumorphic-dark-concave transition-all duration-150 flex items-center justify-center text-xl"
             aria-label="Toggle theme"
           >
             {theme === 'dark' ? '☀️' : '🌙'}
