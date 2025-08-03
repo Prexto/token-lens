@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import CoinList from './components/CoinList';
+import NewsFeed from './components/NewsFeed'; // Import the new component
 
 function App() {
   const [theme, setTheme] = useState(() => {
@@ -26,6 +27,10 @@ function App() {
   return (
     <div className="bg-light-bg dark:bg-dark-bg min-h-screen text-light-text dark:text-dark-text transition-colors duration-300 font-sans">
       <div className="container mx-auto p-4 md:p-8">
+        
+        {/* News Feed Section */}
+        <NewsFeed />
+
         <header className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">
             Crypto Tracker
@@ -38,9 +43,11 @@ function App() {
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
         </header>
+        
         <main>
           <CoinList />
         </main>
+
       </div>
     </div>
   );
