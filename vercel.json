@@ -5,12 +5,8 @@
       "destination": "https://gnews.io/api/v4/:path*"
     },
     {
-      "source": "/api/coingecko/coins/markets",
-      "destination": "https://api.coingecko.com/api/v3/coins/markets"
-    },
-    {
-      "source": "/api/coingecko/coins/categories",
-      "destination": "https://api.coingecko.com/api/v3/coins/categories"
+      "source": "/api/coingecko/:path*",
+      "destination": "https://api.coingecko.com/api/v3/:path*"
     }
   ]
 }
