@@ -25,7 +25,7 @@ function App() {
   };
 
   return (
-    <div className="bg-light-bg dark:bg-dark-bg min-h-screen text-light-text dark:text-dark-text transition-colors duration-300 font-sans">
+    <div className="bg-light-bg dark:bg-dark-bg min-h-screen text-light-text dark:text-dark-text transition-[background-color,color] duration-200 font-sans">
       <div className="container mx-auto p-4 md:p-8">
         
         {/* News Feed Section */}
