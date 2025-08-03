@@ -99,23 +99,30 @@ const CoinList = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredCoins.map((coin) => (
-              <tr key={coin.id} className="border-b border-gray-700 hover:bg-gray-700/50 transition-colors duration-200">
-                <td className="p-4 text-gray-400 font-medium">{coin.market_cap_rank}</td>
-                <td className="p-4 flex items-center">
-                  <img src={coin.image} alt={coin.name} className="w-8 h-8 mr-4 rounded-full" />
-                  <div>
-                    <p className="font-bold text-white">{coin.name}</p>
-                    <p className="text-gray-400 text-sm">{coin.symbol.toUpperCase()}</p>
-                  </div>
-                </td>
-                <td className="p-4 text-right font-mono text-white">${coin.current_price.toLocaleString()}</td>
-                <td className={`p-4 text-right font-semibold ${coin.price_change_percentage_24h > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {coin.price_change_percentage_24h.toFixed(2)}%
-                </td>
-                <td className="p-4 text-right font-mono text-gray-300">${coin.market_cap.toLocaleString()}</td>
-              </tr>
-            ))}
+            {filteredCoins.map((coin) => {
+              const priceChange = coin.price_change_percentage_24h ?? 0;
+              return (
+                <tr key={coin.id} className="border-b border-gray-700 hover:bg-gray-700/50 transition-colors duration-200">
+                  <td className="p-4 text-gray-400 font-medium">{coin.market_cap_rank ?? 'N/A'}</td>
+                  <td className="p-4 flex items-center">
+                    <img src={coin.image} alt={coin.name} className="w-8 h-8 mr-4 rounded-full" />
+                    <div>
+                      <p className="font-bold text-white">{coin.name ?? 'Unknown Coin'}</p>
+                      <p className="text-gray-400 text-sm">{coin.symbol?.toUpperCase() ?? 'N/A'}</p>
+                    </div>
+                  </td>
+                  <td className="p-4 text-right font-mono text-white">
+                    ${coin.current_price?.toLocaleString() ?? 'N/A'}
+                  </td>
+                  <td className={`p-4 text-right font-semibold ${priceChange > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {priceChange.toFixed(2)}%
+                  </td>
+                  <td className="p-4 text-right font-mono text-gray-300">
+                    ${coin.market_cap?.toLocaleString() ?? 'N/A'}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
