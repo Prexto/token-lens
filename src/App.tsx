@@ -33,7 +33,7 @@ function App() {
 
         <header className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">
-            Crypto Tracker
+            Token Lens
           </h1>
           <button
             onClick={handleThemeSwitch}
