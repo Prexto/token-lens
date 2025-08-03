@@ -8,32 +8,17 @@ const NewsFeed = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchNews = async () => {
-    // Don't show loading state on background refresh
     if (!articles.length) {
       setLoading(true);
     }
     setError(null);
 
-    const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
-
-    if (!apiKey || apiKey === 'YOUR_API_KEY_HERE') {
-      setError('GNews API key is missing. Please add it to your .env file.');
-      setLoading(false);
-      return;
-    }
-
     try {
-      const response = await axios.get('https://gnews.io/api/v4/search', {
-        params: {
-          q: 'cryptocurrencies',
-          lang: 'en',
-          max: 10,
-          apikey: apiKey,
-        },
-      });
+      // Call our own backend API endpoint
+      const response = await axios.get('/api/news');
       setArticles(response.data.articles);
     } catch (err) {
-      setError('Failed to fetch news. Please check the console for more details.');
+      setError('Failed to fetch news. The backend API might be down.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -41,15 +26,12 @@ const NewsFeed = () => {
   };
 
   useEffect(() => {
-    // Fetch news immediately on component mount
     fetchNews();
 
-    // Set up interval to refetch news every 6 hours
-    const intervalId = setInterval(fetchNews, 6 * 60 * 60 * 1000); // 6 hours in milliseconds
+    const intervalId = setInterval(fetchNews, 6 * 60 * 60 * 1000);
 
-    // Cleanup function to clear the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
   const newsContent = articles.map((article, index) => (
     <a 
@@ -75,7 +57,7 @@ const NewsFeed = () => {
       
       {error && <p className="text-center text-red-500">{error}</p>}
 
-      {!loading && !error && (
+      {!loading && !error && articles.length > 0 && (
         <div className="marquee-container py-4">
           <div className="marquee">
             <div className="marquee-content">
