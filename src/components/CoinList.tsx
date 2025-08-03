@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import type { Coin, Category } from '../types';
 
@@ -8,6 +8,7 @@ const CoinList = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [sortConfig, setSortConfig] = useState<{ key: keyof Coin | null; direction: 'asc' | 'desc' }>({ key: 'market_cap_rank', direction: 'asc' });
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -37,6 +38,7 @@ const CoinList = () => {
           per_page: 100,
           page: 1,
           sparkline: false,
+          price_change_percentage: '7d',
         };
 
         if (selectedCategory !== 'all') {
@@ -57,9 +59,36 @@ const CoinList = () => {
   }, [selectedCategory]);
 
   const filteredCoins = coins.filter((coin) =>
-    coin.name.toLowerCase().includes(search.toLowerCase()) ||
-    coin.symbol.toLowerCase().includes(search.toLowerCase())
+    (coin.name?.toLowerCase() ?? '').includes(search.toLowerCase()) ||
+    (coin.symbol?.toLowerCase() ?? '').includes(search.toLowerCase())
   );
+
+  const sortedAndFilteredCoins = useMemo(() => {
+    let sortableItems = [...filteredCoins];
+    if (sortConfig.key) {
+      sortableItems.sort((a, b) => {
+        const valA = a[sortConfig.key as keyof Coin] ?? 0;
+        const valB = b[sortConfig.key as keyof Coin] ?? 0;
+
+        if (valA < valB) {
+          return sortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (valA > valB) {
+          return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableItems;
+  }, [filteredCoins, sortConfig]);
+
+  const handleSort = (key: keyof Coin) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
 
   if (loading) {
     return <p className="text-center text-gray-400">Loading...</p>;
@@ -91,15 +120,27 @@ const CoinList = () => {
         <table className="min-w-full bg-gray-800 border-collapse">
           <thead className="bg-gray-900">
             <tr>
-              <th className="p-4 text-left text-sm font-semibold text-gray-300">#</th>
-              <th className="p-4 text-left text-sm font-semibold text-gray-300">Moneda</th>
-              <th className="p-4 text-right text-sm font-semibold text-gray-300">Precio</th>
-              <th className="p-4 text-right text-sm font-semibold text-gray-300">24h %</th>
-              <th className="p-4 text-right text-sm font-semibold text-gray-300">Capitalización de Mercado</th>
+              {['#', 'Moneda', 'Precio', '24h %', '7d %', 'Capitalización de Mercado'].map((header, index) => {
+                const sortKeyMap: (keyof Coin | null)[] = ['market_cap_rank', null, 'current_price', 'price_change_percentage_24h', 'price_change_percentage_7d_in_currency', 'market_cap'];
+                const key = sortKeyMap[index];
+                const isSortable = key !== null;
+                return (
+                  <th 
+                    key={header} 
+                    className={`p-4 text-sm font-semibold text-gray-300 ${isSortable ? 'cursor-pointer hover:bg-gray-700' : ''} ${index > 1 ? 'text-right' : 'text-left'}`}
+                    onClick={() => isSortable && handleSort(key)}
+                  >
+                    {header}
+                    {sortConfig.key === key && (
+                      <span className="ml-2">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>
+                    )}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
-            {filteredCoins.map((coin) => {
+            {sortedAndFilteredCoins.map((coin) => {
               const priceChange = coin.price_change_percentage_24h ?? 0;
               return (
                 <tr key={coin.id} className="border-b border-gray-700 hover:bg-gray-700/50 transition-colors duration-200">
@@ -116,6 +157,9 @@ const CoinList = () => {
                   </td>
                   <td className={`p-4 text-right font-semibold ${priceChange > 0 ? 'text-green-500' : 'text-red-500'}`}>
                     {priceChange.toFixed(2)}%
+                  </td>
+                  <td className={`p-4 text-right font-semibold ${coin.price_change_percentage_7d_in_currency > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {(coin.price_change_percentage_7d_in_currency ?? 0).toFixed(2)}%
                   </td>
                   <td className="p-4 text-right font-mono text-gray-300">
                     ${coin.market_cap?.toLocaleString() ?? 'N/A'}
