@@ -44,10 +44,41 @@ A minimalist and elegant cryptocurrency tracker featuring a clean, neumorphic us
     npm install
     ```
 
-4.  **Run the development server:**
+4.  **Set up environment variables:**
+    ```bash
+    cp .env.example .env
+    ```
+    Edit `.env` and add your GNews API key:
+    ```
+    VITE_GNEWS_API_KEY="your_actual_api_key_here"
+    ```
+
+5.  **Run the development server:**
     ```bash
     npm run dev
     ```
+
+## 🚀 Deployment on Vercel
+
+### Environment Variables Setup
+
+1. **In Vercel Dashboard:**
+   - Go to your project settings
+   - Navigate to "Environment Variables"
+   - Add: `VITE_GNEWS_API_KEY` with your GNews API key value
+
+2. **Deploy:**
+   ```bash
+   npm run build
+   vercel --prod
+   ```
+
+### API Configuration
+
+The app uses:
+- **CoinGecko API**: Public API for cryptocurrency data (no key required)
+- **GNews API**: Requires API key for news articles
+- **Vercel Serverless Functions**: For API proxying to avoid CORS issues
 
 ## 📄 License
 

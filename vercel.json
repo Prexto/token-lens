@@ -6,7 +6,23 @@
     },
     {
       "source": "/api/coingecko/:path*",
-      "destination": "https://api.coingecko.com/api/v3/:path*"
+      "destination": "/api/coingecko?path=:path*" 
     }
-  ]
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "s-maxage=300, stale-while-revalidate=600"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "api/coingecko.cjs": {
+      "maxDuration": 30
+    }
+  }
 }
