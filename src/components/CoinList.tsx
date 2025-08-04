@@ -6,6 +6,8 @@ const CoinList = () => {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortConfig, setSortConfig] = useState<{ key: keyof Coin | null; direction: 'asc' | 'desc' }>({ key: 'market_cap_rank', direction: 'asc' });
@@ -27,35 +29,65 @@ const CoinList = () => {
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    const fetchCoins = async () => {
+  const fetchCoins = async (retry = false) => {
+    if (!retry) {
       setLoading(true);
-      try {
-        const params: any = {
-          vs_currency: 'usd',
-          order: 'market_cap_desc',
-          per_page: 100,
-          page: 1,
-          sparkline: false,
-          price_change_percentage: '7d',
-        };
+      setError(null);
+    }
+    
+    try {
+      const params: any = {
+        vs_currency: 'usd',
+        order: 'market_cap_desc',
+        per_page: 100,
+        page: 1,
+        sparkline: false,
+        price_change_percentage: '7d',
+      };
 
-        if (selectedCategory !== 'all') {
-          params.category = selectedCategory;
-        }
-
-        const response = await axios.get('/api/coingecko/coins/markets', {
-          params: params
-        });
-        setCoins(response.data);
-      } catch (error) {
-        console.error('Error fetching coin data:', error);
-        setCoins([]);
-      } finally {
-        setLoading(false);
+      if (selectedCategory !== 'all') {
+        params.category = selectedCategory;
       }
-    };
 
+      const response = await axios.get('/api/coingecko/coins/markets', {
+        params: params,
+        timeout: 15000 // 15 second timeout
+      });
+      
+      // Check if response indicates API unavailability
+      if (response.data?.error && response.data?.status === 403) {
+        throw new Error('API temporarily unavailable');
+      }
+      
+      setCoins(response.data);
+      setError(null);
+      setRetryCount(0);
+    } catch (error: any) {
+      console.error('Error fetching coin data:', error);
+      
+      let errorMessage = 'Failed to load cryptocurrency data';
+      
+      if (error.response?.status === 403 || error.message?.includes('403')) {
+        errorMessage = 'CoinGecko API is temporarily unavailable due to high traffic. Please try again in a few moments.';
+      } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        errorMessage = 'Request timed out. Please check your connection and try again.';
+      } else if (!navigator.onLine) {
+        errorMessage = 'No internet connection. Please check your network and try again.';
+      }
+      
+      setError(errorMessage);
+      setCoins([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+    fetchCoins(true);
+  };
+
+  useEffect(() => {
     fetchCoins();
   }, [selectedCategory]);
 
@@ -112,6 +144,37 @@ const CoinList = () => {
 
   if (loading) {
     return <p className="text-center text-xl font-medium">Loading data...</p>;
+  }
+
+  // Error state with retry option
+  if (error && coins.length === 0) {
+    return (
+      <div className="text-center space-y-6 p-8 rounded-2xl shadow-neumorphic-light-convex dark:shadow-neumorphic-dark-convex">
+        <div className="space-y-4">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h3 className="text-xl font-bold text-red-600 dark:text-red-400">Unable to Load Data</h3>
+          <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">{error}</p>
+          
+          <button
+            onClick={handleRetry}
+            disabled={loading}
+            className="px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-semibold rounded-xl shadow-neumorphic-light-convex dark:shadow-neumorphic-dark-convex transition-colors duration-200 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Retrying...' : `Try Again ${retryCount > 0 ? `(${retryCount})` : ''}`}
+          </button>
+          
+          <div className="text-sm text-gray-500 dark:text-gray-400 space-y-2">
+            <p>Possible solutions:</p>
+            <ul className="list-disc list-inside space-y-1 text-left max-w-sm mx-auto">
+              <li>Wait a few minutes and try again</li>
+              <li>Check your internet connection</li>
+              <li>Clear your browser cache</li>
+              <li>The service may be experiencing high traffic</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

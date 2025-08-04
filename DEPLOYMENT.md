@@ -57,6 +57,12 @@ vercel --prod
 2. **CORS errors**: Verify API proxy configuration in `vercel.json`
 3. **Build failures**: Check TypeScript compilation errors
 4. **API timeouts**: Verify Vercel function timeout settings
+5. **403 Forbidden errors from CoinGecko**:
+   - This is the most common issue in production
+   - CoinGecko blocks requests from certain IPs/User-Agents
+   - The proxy includes fallback mechanisms and retry logic
+   - Users will see a friendly error message with retry button
+   - Usually resolves after a few minutes or retries
 
 ### Debug Commands:
 ```bash
