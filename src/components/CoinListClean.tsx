@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import type { Coin, Category } from '../types';
 
-const CoinList = () => {
+const CoinListClean = () => {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -211,4 +211,4 @@ const CoinList = () => {
   );
 };
 
-export default CoinList;
+export default CoinListClean;
