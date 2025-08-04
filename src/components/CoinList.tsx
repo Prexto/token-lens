@@ -13,7 +13,7 @@ const CoinList = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('/api/coingecko/coins/categories', {
+        const response = await axios.get('https://api.coingecko.com/api/v3/coins/categories', {
           params: {
             order: 'market_cap_desc'
           }
@@ -44,7 +44,7 @@ const CoinList = () => {
           params.category = selectedCategory;
         }
 
-        const response = await axios.get('/api/coingecko/coins/markets', {
+        const response = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
           params: params
         });
         setCoins(response.data);

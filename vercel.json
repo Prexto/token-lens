@@ -3,10 +3,6 @@
     {
       "source": "/api/gnews/:path*",
       "destination": "https://gnews.io/api/v4/:path*"
-    },
-    {
-      "source": "/api/coingecko/:path*",
-      "destination": "https://api.coingecko.com/api/v3/:path*"
     }
   ]
 }
